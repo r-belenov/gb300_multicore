@@ -1,10 +1,10 @@
 [submodule "libs/libretro-common"]
 	path = libs/libretro-common
-	url = https://github.com/madcock/libretro-common
+	url = git@github.com:r-belenov/libretro-common
 	branch = master
 [submodule "cores"]
 	path = cores
-	url = https://github.com/madcock/sf2000_multicore_cores
+	url = git@github.com:r-belenov/sf2000_multicore_cores
 	branch = main
 [submodule "assets/coreconfig"]
 	path = assets/coreconfig

@@ -13,14 +13,15 @@ LOADER_OFFSET=0x1500
 LOADER_ADDR=0x80001500
 LOADER_ADDR_MAX=0x80002180
 
-MIPS=/opt/mips32-mti-elf/2019.09-03-2/bin/mips-mti-elf-
+#MIPS=/opt/mips32-mti-elf/2019.09-03-2/bin/mips-mti-elf-
+MIPS=/Users/roman/apps/mips-toolchain/bin/mips-mti-elf-
 
 CC = $(MIPS)gcc
 CXX = $(MIPS)g++
 LD = $(MIPS)ld
 OBJCOPY = $(MIPS)objcopy
 
-CFLAGS := -EL -march=mips32 -mtune=mips32 -msoft-float
+CFLAGS := -EL -march=mips32 -mtune=mips32 -msoft-float -Wno-error=int-conversion -Wno-error=implicit-function-declaration
 CFLAGS += -Os -G0 -mno-abicalls -fno-pic
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -I libs/libretro-common/include
@@ -98,6 +99,9 @@ LOADER_OBJS=init.o main.o debug.o
 # CORE=cores/snes9x2005
 # CONSOLE=snes
 
+CORE=cores/tyrquake
+CONSOLE=quake
+
 # Default target
 ifneq ($(CORE),)
 all: core_87000000 bisrv.asd install
@@ -123,12 +127,12 @@ libretro-common:
 	$(MAKE) -j$(NPROC) -C libs/libretro-common
 
 libretro-common.a: libretro-common
-	cp -u libs/libretro-common/$@ $@
+	cp libs/libretro-common/$@ $@
 
 core.elf: libretro_core.a libretro-common.a $(CORE_OBJS)
 	@$(call echo_i,"compiling $@")
-	$(CXX) -Wl,-Map=$@.map $(CXX_LDFLAGS) -e __core_entry__ -Tcore.ld bisrv_08_03-core.ld -o $@ \
-		-Wl,--start-group $(CORE_OBJS) libretro_core.a libretro-common.a -lc -Wl,--end-group
+	$(CC) -Wl,-Map=$@.map $(CXX_LDFLAGS) -e __core_entry__ -Tcore.ld bisrv_08_03-core.ld -o $@ \
+		-Wl,--start-group $(CORE_OBJS) libretro_core.a libretro-common.a -lc -lm -Wl,--end-group
 
 core_87000000: core.elf
 	$(OBJCOPY) -O binary -R .MIPS.abiflags -R .note.gnu.build-id -R ".rel*" core.elf core_87000000
